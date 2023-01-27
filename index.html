@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+	<script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+	<script>
+const NUM = 8;
+const LERP_SPEED = 0.9;
+const WD = 3.6;
+const HG = 2.1;
+var markersURLArray=[];
+var markersNameArray=[];
+var markers = [];
+var videos = [];
+
+if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js', {
+            scope: '/'
+        });
+    }
+
+AFRAME.registerComponent('markers_start',
+{
+    init:function(){
+    for (let i = 0 ; i< NUM; i++){
+        
+        var sceneEl = document.querySelector('a-scene');
+                            
+                var url=`patterns/pattern-${i+1}.patt`;
+                markersURLArray.push(url);
+                markersNameArray.push(`Marker_${i}`);      
+
+                var markerEl = document.createElement('a-marker');
+                markerEl.setAttribute('type','pattern');
+                markerEl.setAttribute('url',markersURLArray[i]);
+                markerEl.setAttribute('id',markersNameArray[i]);
+                markerEl.setAttribute('registerevents','');
+                markerEl.setAttribute(`video${i}`,'');
+                sceneEl.appendChild(markerEl);
+                markers.push(markerEl);
+
+                var vidEl = document.createElement('a-video');      
+                vidEl.setAttribute('width',WD);
+                vidEl.setAttribute('height',HG);
+                vidEl.setAttribute('src',`#vid${i+1}`)
+                vidEl.setAttribute('position','0, 0, 0');
+                vidEl.setAttribute('rotation','-90, 0, 0');
+                vidEl.object3D.rotation.set(-90, 0, 0);
+                markerEl.appendChild(vidEl);
+                videos.push(vidEl);
+
+        AFRAME.registerComponent(`video${i}`,{
+            init: function(){
+                this.toggle = false;
+                this.vid = document.querySelector(`#vid${i+1}`);
+                this.vid.pause();
+            },
+            tick: function(){
+                
+                    if (this.el.object3D.visible == true) {
+                        if (!this.toggle) {
+                            this.toggle = true;
+                            this.vid.play();
+                        }
+                    } else {
+                        this.toggle = false;
+                        this.vid.pause();
+                        this.vid.currentTime = 0;
+                    }
+            },
+            })
+    };
+}});
+	</script>
+
+  </head>
+  <body style='margin : 0px; overflow: hidden;'>
+	
+    <a-scene markers_start  embedded arjs='sourceType: webcam; debugUIEnabled: false; patternRatio: 0.8' device-orientation-permission-ui="enabled: true" vr-mode-ui="enabled: false" >
+	<a-assets>
+	<video id="vid1" src="videos/1.mp4" autoplay="true" loop="true" crossorigin="anonymous" muted playsinline style="display: none" timeout="10000"></video>
+	<video id="vid2" src="videos/2.mp4" autoplay="true" loop="true" crossorigin="anonymous" muted playsinline style="display: none" timeout="10000"></video>
+	<video id="vid3" src="videos/3.mp4" autoplay="true" loop="true" crossorigin="anonymous" muted playsinline style="display: none" timeout="10000"></video>
+	<video id="vid4" src="videos/4.mp4" autoplay="true" loop="true" crossorigin="anonymous" muted playsinline style="display: none" timeout="10000"></video>
+	<video id="vid5" src="videos/5.mp4" autoplay="true" loop="true" crossorigin="anonymous" muted playsinline style="display: none" timeout="10000"></video>
+	<video id="vid6" src="videos/6.mp4" autoplay="true" loop="true" crossorigin="anonymous" muted playsinline style="display: none" timeout="10000"></video>
+	<video id="vid7" src="videos/7.mp4" autoplay="true" loop="true" crossorigin="anonymous" muted playsinline style="display: none" timeout="10000"></video>
+	<video id="vid8" src="videos/8.mp4" autoplay="true" loop="true" crossorigin="anonymous" muted playsinline style="display: none" timeout="10000"></video>
+	</a-assets>
+	
+	<a-entity camera></a-entity>
+  </a-scene>
+  </body>
+</html>
